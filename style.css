@@ -332,3 +332,93 @@ div.stDownloadButton > button:hover {
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;
 }
+
+
+/* AJUSTES FINOS DOS TEMAS ESCUROS */
+
+/* Bordas e contornos */
+[data-testid="stSidebar"],
+[data-testid="stMetric"],
+[data-testid="stExpander"],
+[data-testid="stDataFrame"],
+[data-testid="stTable"],
+[data-baseweb="select"] > div {
+  border-color: var(--border) !important;
+}
+
+/* Seletores: fundo, texto e bordas */
+[data-testid="stSidebar"] [data-baseweb="select"] > div {
+  background-color: var(--panel-bg) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="select"] * {
+  color: var(--text) !important;
+}
+
+/* Área da seta dos seletores */
+[data-testid="stSidebar"] [data-baseweb="select"] svg {
+  fill: var(--muted) !important;
+  color: var(--muted) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="select"] [role="button"] {
+  background-color: transparent !important;
+}
+
+/* Opções abertas dos seletores */
+[data-baseweb="popover"],
+[data-baseweb="menu"] {
+  background-color: var(--panel-bg) !important;
+  border: 1px solid var(--border) !important;
+}
+
+[data-baseweb="popover"] li,
+[data-baseweb="menu"] li {
+  background-color: var(--panel-bg) !important;
+  color: var(--text) !important;
+}
+
+[data-baseweb="popover"] li:hover,
+[data-baseweb="menu"] li:hover {
+  background-color: var(--sidebar-bg) !important;
+}
+
+/* Tabela: estilos dos elementos que aceitam CSS externo */
+[data-testid="stTable"] table,
+[data-testid="stDataFrame"] table {
+  background-color: var(--panel-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+[data-testid="stTable"] th,
+[data-testid="stDataFrame"] th {
+  background-color: var(--sidebar-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+[data-testid="stTable"] td,
+[data-testid="stDataFrame"] td {
+  background-color: var(--panel-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+/* Controle de intervalo */
+[data-testid="stSlider"] [data-baseweb="slider"] div {
+  border-color: var(--border);
+}
+
+/* Tags dos times selecionados */
+[data-testid="stSidebar"] [data-baseweb="tag"] {
+  background-color: var(--orange) !important;
+  border-color: var(--orange) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="tag"] * {
+  color: #FFFFFF !important;
+}
+
