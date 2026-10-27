@@ -1,0 +1,334 @@
+
+/* CARTOLA 2026 — LIGA GALERA TI
+   Temas: Cartola Original, Campo Verde,
+   Areia Esportiva e Clássico Claro. */
+
+/* CORES PADRÃO — O dashboard.py SOBREPÕE ESTAS VARIÁVEIS */
+:root {
+  --page-bg: #17191D;
+  --panel-bg: #22252A;
+  --green: #20C761;
+  --orange: #FF5A1F;
+  --gold: #FFE000;
+  --text: #FFFFFF;
+  --muted: #C4C8CC;
+  --border: #3A3F45;
+  --sidebar-bg: #202328;
+  --input-bg: #292D32;
+  --table-bg: #17191D;
+  --hero-bg: #292D32;
+  --metric-bg: #292D32;
+  --metric-text: #20C761;
+}
+
+/* BASE */
+html,
+body,
+.stApp {
+  font-size: 17px !important;
+}
+
+.stApp {
+  background: var(--page-bg) !important;
+  color: var(--text) !important;
+}
+
+[data-testid="stHeader"] {
+  background: var(--page-bg) !important;
+}
+
+[data-testid="stSidebar"] {
+  background: var(--sidebar-bg) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.stApp p,
+.stApp label,
+.stApp li,
+.stApp [data-testid="stMarkdownContainer"],
+[data-testid="stSidebar"] * {
+  color: var(--text);
+  font-size: 16px !important;
+}
+
+/* TÍTULOS */
+h1,
+h2,
+h3 {
+  color: var(--text) !important;
+  letter-spacing: -0.3px;
+}
+
+h1 {
+  font-size: 38px !important;
+  font-weight: 850 !important;
+}
+
+h2 {
+  font-size: 30px !important;
+  font-weight: 800 !important;
+}
+
+h3 {
+  font-size: 25px !important;
+  font-weight: 750 !important;
+}
+
+/* TEXTO SECUNDÁRIO */
+small,
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] * {
+  color: var(--muted) !important;
+  font-size: 14px !important;
+}
+
+/* FILTROS E CAMPOS */
+[data-testid="stSidebar"] [data-baseweb="select"] > div {
+  background: var(--input-bg) !important;
+  border-color: var(--border) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="tag"] {
+  background: var(--orange) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="tag"] span {
+  color: #FFFFFF !important;
+  font-size: 14px !important;
+}
+
+input,
+textarea {
+  color: var(--text) !important;
+  background: var(--input-bg) !important;
+}
+
+/* INDICADORES */
+[data-testid="stMetric"] {
+  background: var(--metric-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  min-height: 115px;
+}
+
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] * {
+  color: var(--muted) !important;
+  font-size: 16px !important;
+}
+
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] * {
+  color: var(--metric-text) !important;
+  font-size: 29px !important;
+  font-weight: 850 !important;
+  line-height: 1.35 !important;
+}
+
+/* TABELAS */
+[data-testid="stDataFrame"] {
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+/* GRÁFICOS */
+div[data-testid="stPlotlyChart"] {
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  padding: 8px !important;
+  margin-bottom: 14px !important;
+}
+
+/* ABAS */
+[data-testid="stTabs"] button {
+  color: var(--text) !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  padding: 12px 16px !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+  color: var(--orange) !important;
+  border-bottom-color: var(--orange) !important;
+}
+
+/* BOTÕES */
+div.stButton > button,
+div.stDownloadButton > button {
+  min-height: 44px !important;
+  border-radius: 9px !important;
+  border: 1px solid var(--green) !important;
+  background: var(--green) !important;
+  color: #102016 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+div.stButton > button:hover,
+div.stDownloadButton > button:hover {
+  filter: brightness(1.08);
+}
+
+/* CABEÇALHO PRINCIPAL */
+.hero {
+  background: var(--hero-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-left: 6px solid var(--orange) !important;
+  border-radius: 18px !important;
+  padding: 26px !important;
+  margin: 4px 0 22px !important;
+}
+
+.hero-eyebrow {
+  color: var(--orange) !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  letter-spacing: 2px !important;
+  margin-bottom: 8px !important;
+}
+
+.hero-title {
+  color: var(--text) !important;
+  font-size: 38px !important;
+  font-weight: 950 !important;
+  line-height: 1.15 !important;
+}
+
+.hero-league {
+  color: var(--green) !important;
+  font-size: 25px !important;
+  font-weight: 850 !important;
+  margin-top: 4px !important;
+}
+
+.hero-subtitle {
+  color: var(--muted) !important;
+  font-size: 17px !important;
+  margin-top: 10px !important;
+}
+
+/* TÍTULOS DE SEÇÃO */
+.section-kicker {
+  color: var(--orange) !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  letter-spacing: 1.4px !important;
+  text-transform: uppercase !important;
+  margin: 8px 0 !important;
+}
+
+/* CARDS DOS TIMES */
+.team-card,
+.team-card-large {
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  margin: 6px 0 14px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  text-align: center !important;
+}
+
+.team-name {
+  color: var(--text) !important;
+  font-size: 21px !important;
+  font-weight: 850 !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere;
+}
+
+.team-manager,
+.team-extra {
+  color: var(--muted) !important;
+  font-size: 15px !important;
+}
+
+.team-points {
+  color: var(--green) !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+.team-position {
+  color: var(--gold) !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+}
+
+.crest-fallback {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--orange);
+  border-radius: 50%;
+  background: var(--panel-bg);
+  color: var(--gold);
+  font-size: 32px;
+}
+
+/* RODAPÉ */
+.footer {
+  border-top: 1px solid var(--border) !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  text-align: center;
+  margin-top: 18px;
+  padding: 8px 0 3px;
+  opacity: 1 !important;
+}
+
+
+/* RODAPÉ — DISCRETO E LEGÍVEL */
+.footer {
+  border-top: 1px solid var(--border) !important;
+  color: var(--muted) !important;
+  font-size: 14px !important;
+  text-align: center;
+  margin-top: 24px;
+  padding: 12px 0 8px;
+  opacity: 1 !important;
+  line-height: 1.7 !important;
+}
+
+.footer div,
+.footer span,
+.footer strong {
+  color: var(--muted) !important;
+  font-size: 18px !important;
+}
+
+.footer a {
+  color: var(--orange) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+.footer a:hover {
+  color: var(--green) !important;
+  text-decoration: underline !important;
+}
+
+.footer-links {
+  margin-top: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+/* EXPANSORES */
+[data-testid="stExpander"] {
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+}
