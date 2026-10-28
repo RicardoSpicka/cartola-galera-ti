@@ -314,12 +314,35 @@ with aba_visao:
         'patrimonio': 'Patrimônio'
     })
 
+    
     st.dataframe(
-        tabela.style.format({
+        tabela.style
+        .format({
             'Pontos na rodada': '{:.2f}',
             'Pontos no turno': '{:.2f}',
             'Patrimônio': '{:.2f}'
-        }),
+        })
+        .set_properties(**{
+            'background-color': tema['panel'],
+            'color': tema['text'],
+            'border-color': tema['border']
+        })
+        .set_table_styles([
+            {
+                'selector': 'th',
+                'props': [
+                    ('background-color', tema['sidebar']),
+                    ('color', tema['text']),
+                    ('border-color', tema['border'])
+                ]
+            },
+            {
+                'selector': 'td',
+                'props': [
+                    ('border-color', tema['border'])
+                ]
+            }
+        ]),
         use_container_width=True,
         hide_index=True
     )
