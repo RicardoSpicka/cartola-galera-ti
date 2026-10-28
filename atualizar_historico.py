@@ -6,72 +6,36 @@ from pathlib import Path
 import requests
 
 
-# ============================================================
-# CONFIGURAÇÕES
-# ============================================================
-
 BASE_URL = "https://api.cartolafc.globo.com"
-
 RODADA_INICIAL = 19
-
-ARQUIVO_HISTORICO = Path(__file__).parent / "historico_cartola.csv"
-
+ARQUIVO = Path(__file__).resolve().parent / "historico_cartola.csv"
 TIMEOUT = 30
 TENTATIVAS = 3
 
 TIMES = [
-    {
-        "id": 48959555,
-        "nome": "Pácábá Sporte Club",
-        "cartoleiro": "Ricardo Spicka",
-    },
-    {
-        "id": 51313999,
-        "nome": "kopo d'água",
-        "cartoleiro": "Miriam",
-    },
-    {
-        "id": 51242673,
-        "nome": "divadafiel",
-        "cartoleiro": "debz",
-    },
-    {
-        "id": 51313793,
-        "nome": "AIMS Acaba",
-        "cartoleiro": "Vicente",
-    },
-    {
-        "id": 28884151,
-        "nome": "cBenefs",
-        "cartoleiro": "Bruno H Favoreto",
-    },
-    {
-        "id": 51313791,
-        "nome": "FEBRE DO RATO DE ESGOTO",
-        "cartoleiro": "Raquel Silva",
-    },
+    {"id": 48959555, "nome_time": "Pácábá Sporte Club", "cartoleiro": "Ricardo Spicka"},
+    {"id": 51313999, "nome_time": "kopo d'água", "cartoleiro": "Miriam"},
+    {"id": 51242673, "nome_time": "divadafiel", "cartoleiro": "debz"},
+    {"id": 51313793, "nome_time": "AIMS Acaba", "cartoleiro": "Vicente"},
+    {"id": 28884151, "nome_time": "cBenefs", "cartoleiro": "Bruno H Favoreto"},
+    {"id": 51313791, "nome_time": "FEBRE DO RATO DE ESGOTO", "cartoleiro": "Raquel Silva"},
 ]
 
-CAMPOS_CSV = [
+# Estes nomes correspondem ao dashboard.py atual.
+CAMPOS = [
     "rodada",
     "time_id",
-    "time",
+    "nome_time",
     "cartoleiro",
-    "pontos",
+    "pontos_rodada",
+    "pontos_acumulados_liga",
     "patrimonio",
-    "pontos_acumulados",
-    "posicao_rodada",
-    "posicao_geral",
+    "posicao_liga",
+    "status",
 ]
 
 
-# ============================================================
-# CONSULTAS À API
-# ============================================================
-
 def consultar_api(url):
-    """Consulta a API com tentativas em caso de falha."""
-
     ultimo_erro = None
 
     for tentativa in range(1, TENTATIVAS + 1):
@@ -83,55 +47,45 @@ def consultar_api(url):
                     "User-Agent": "Mozilla/5.0 CartolaLigaGaleraTI/1.0"
                 },
             )
-
             resposta.raise_for_status()
-
             dados = resposta.json()
 
             if not isinstance(dados, dict):
-                raise ValueError("A API retornou um formato inesperado.")
+                raise ValueError("Resposta inesperada da API.")
 
             return dados
 
         except (requests.RequestException, ValueError) as erro:
             ultimo_erro = erro
-
-            print(
-                f"Falha na consulta ({tentativa}/{TENTATIVAS}): "
-                f"{url} - {erro}"
-            )
+            print(f"Tentativa {tentativa}/{TENTATIVAS}: {erro}")
 
             if tentativa < TENTATIVAS:
                 time.sleep(2 * tentativa)
 
-    raise RuntimeError(
-        f"Não foi possível consultar a API: {url}"
-    ) from ultimo_erro
+    raise RuntimeError(f"Falha ao consultar {url}") from ultimo_erro
 
 
-def obter_rodada_atual():
-    """Obtém a rodada informada pela API do Cartola."""
+def obter_ultima_rodada_salva():
+    if not ARQUIVO.exists():
+        return RODADA_INICIAL - 1
 
-    dados = consultar_api(f"{BASE_URL}/mercado/status")
+    with ARQUIVO.open("r", newline="", encoding="utf-8-sig") as arquivo:
+        leitor = csv.DictReader(arquivo)
 
-    rodada = dados.get("rodada_atual")
+        if "rodada" not in (leitor.fieldnames or []):
+            raise RuntimeError("O CSV atual não possui a coluna rodada.")
 
-    if not isinstance(rodada, int) or rodada < 1:
-        raise RuntimeError(
-            "A API não retornou uma rodada atual válida."
-        )
+        rodadas = [
+            int(linha["rodada"])
+            for linha in leitor
+            if linha.get("rodada")
+        ]
 
-    return rodada
+    return max(rodadas, default=RODADA_INICIAL - 1)
 
 
 def obter_dados_time(time_info, rodada):
-    """Consulta a pontuação e o patrimônio de um time em uma rodada."""
-
-    url = (
-        f"{BASE_URL}/time/id/"
-        f"{time_info['id']}/{rodada}"
-    )
-
+    url = f"{BASE_URL}/time/id/{time_info['id']}/{rodada}"
     dados = consultar_api(url)
 
     pontos = dados.get("pontos")
@@ -139,222 +93,120 @@ def obter_dados_time(time_info, rodada):
 
     if pontos is None or patrimonio is None:
         raise RuntimeError(
-            f"Dados incompletos para "
-            f"{time_info['nome']} na rodada {rodada}."
+            f"Dados incompletos: {time_info['nome_time']}, rodada {rodada}."
         )
 
-    return {
-        "pontos": float(pontos),
-        "patrimonio": float(patrimonio),
-    }
+    return float(pontos), float(patrimonio)
 
-
-# ============================================================
-# LEITURA DO HISTÓRICO EXISTENTE
-# ============================================================
-
-def obter_ultima_rodada_salva():
-    """Descobre a última rodada já existente no CSV."""
-
-    if not ARQUIVO_HISTORICO.exists():
-        return RODADA_INICIAL - 1
-
-    with ARQUIVO_HISTORICO.open(
-        "r",
-        newline="",
-        encoding="utf-8-sig",
-    ) as arquivo:
-        leitor = csv.DictReader(arquivo)
-
-        if "rodada" not in (leitor.fieldnames or []):
-            raise RuntimeError(
-                "O CSV existente não possui a coluna 'rodada'."
-            )
-
-        rodadas = []
-
-        for linha in leitor:
-            valor = linha.get("rodada")
-
-            if valor:
-                rodadas.append(int(valor))
-
-    return max(rodadas, default=RODADA_INICIAL - 1)
-
-
-# ============================================================
-# COLETA DO HISTÓRICO
-# ============================================================
 
 def coletar_historico():
-    print("=" * 60)
-    print("ATUALIZAÇÃO DO HISTÓRICO - LIGA GALERA TI")
-    print("=" * 60)
+    print("Iniciando atualização do histórico da Liga Galera TI.")
 
-    rodada_atual = obter_rodada_atual()
-    ultima_rodada_salva = obter_ultima_rodada_salva()
+    status = consultar_api(f"{BASE_URL}/mercado/status")
+    rodada_atual = status.get("rodada_atual")
 
-    # Não reduz o histórico já publicado.
-    rodada_final = max(
-        ultima_rodada_salva,
-        rodada_atual - 1,
-    )
+    if not isinstance(rodada_atual, int) or rodada_atual < 1:
+        raise RuntimeError("A API não informou uma rodada válida.")
 
-    print(f"Rodada informada pela API: {rodada_atual}")
-    print(f"Última rodada salva: {ultima_rodada_salva}")
-    print(f"Rodada final da coleta: {rodada_final}")
+    ultima_salva = obter_ultima_rodada_salva()
+
+    # Considera concluída a rodada anterior à rodada atual da API.
+    # Nunca reduz a quantidade de rodadas que já existe no CSV.
+    rodada_final = max(ultima_salva, rodada_atual - 1)
 
     if rodada_final < RODADA_INICIAL:
-        raise RuntimeError(
-            "Ainda não há rodadas disponíveis para coletar."
-        )
+        raise RuntimeError("Não há rodadas disponíveis para coletar.")
+
+    print(f"Rodada informada pela API: {rodada_atual}")
+    print(f"Histórico será reconstruído até a rodada {rodada_final}.")
 
     linhas = []
-    pontos_acumulados = {
-        time_info["id"]: 0.0
-        for time_info in TIMES
-    }
+    acumulados = {time["id"]: 0.0 for time in TIMES}
 
-    # Coleta todas as rodadas para reconstruir o CSV completo.
-    # O arquivo original só será substituído após validar tudo.
     for rodada in range(RODADA_INICIAL, rodada_final + 1):
         print(f"\nColetando rodada {rodada}...")
-
         dados_rodada = []
 
         for time_info in TIMES:
-            dados_time = obter_dados_time(time_info, rodada)
-
-            pontos_acumulados[time_info["id"]] += (
-                dados_time["pontos"]
-            )
+            pontos, patrimonio = obter_dados_time(time_info, rodada)
+            acumulados[time_info["id"]] += pontos
 
             dados_rodada.append({
                 "rodada": rodada,
-                "time_id": time_info["id"],
-                "time": time_info["nome"],
+                "time_id": str(time_info["id"]),
+                "nome_time": time_info["nome_time"],
                 "cartoleiro": time_info["cartoleiro"],
-                "pontos": dados_time["pontos"],
-                "patrimonio": dados_time["patrimonio"],
-                "pontos_acumulados": pontos_acumulados[
-                    time_info["id"]
-                ],
+                "pontos_rodada": pontos,
+                "pontos_acumulados_liga": round(
+                    acumulados[time_info["id"]], 2
+                ),
+                "patrimonio": patrimonio,
+                "posicao_liga": 0,
+                "status": "OK",
             })
 
-            print(
-                f"  {time_info['nome']}: "
-                f"{dados_time['pontos']:.2f} pontos"
-            )
-
+            print(f"  {time_info['nome_time']}: {pontos:.2f} pontos")
             time.sleep(0.2)
 
-        # Classifica os times da rodada pela pontuação.
-        classificacao_rodada = sorted(
+        # Classificação acumulada da liga até esta rodada.
+        classificacao = sorted(
             dados_rodada,
-            key=lambda item: item["pontos"],
+            key=lambda item: item["pontos_acumulados_liga"],
             reverse=True,
         )
 
-        for posicao, item in enumerate(
-            classificacao_rodada,
-            start=1,
-        ):
-            item["posicao_rodada"] = posicao
-
-        # Classificação geral pelo acumulado até a rodada.
-        classificacao_geral = sorted(
-            dados_rodada,
-            key=lambda item: item["pontos_acumulados"],
-            reverse=True,
-        )
-
-        for posicao, item in enumerate(
-            classificacao_geral,
-            start=1,
-        ):
-            item["posicao_geral"] = posicao
+        for posicao, item in enumerate(classificacao, start=1):
+            item["posicao_liga"] = posicao
 
         linhas.extend(dados_rodada)
 
     validar_historico(linhas, rodada_final)
-
     salvar_historico(linhas)
 
-    print("\n" + "=" * 60)
-    print(f"Histórico atualizado: {ARQUIVO_HISTORICO}")
+    print("\nHistórico atualizado com sucesso.")
     print(f"Total de registros: {len(linhas)}")
-    print(f"Rodadas processadas: {RODADA_INICIAL} a {rodada_final}")
-    print("=" * 60)
 
-
-# ============================================================
-# VALIDAÇÃO E GRAVAÇÃO SEGURA
-# ============================================================
 
 def validar_historico(linhas, rodada_final):
-    """Valida a coleta antes de substituir o CSV existente."""
+    esperado = (rodada_final - RODADA_INICIAL + 1) * len(TIMES)
 
-    quantidade_rodadas = rodada_final - RODADA_INICIAL + 1
-    quantidade_esperada = quantidade_rodadas * len(TIMES)
-
-    if len(linhas) != quantidade_esperada:
+    if len(linhas) != esperado:
         raise RuntimeError(
-            f"Quantidade incorreta de registros: "
-            f"{len(linhas)}; esperado: {quantidade_esperada}."
+            f"Esperados {esperado} registros; recebidos {len(linhas)}."
         )
 
     for rodada in range(RODADA_INICIAL, rodada_final + 1):
-        registros = [
-            item for item in linhas
-            if item["rodada"] == rodada
-        ]
+        registros = [linha for linha in linhas if linha["rodada"] == rodada]
+        ids = {linha["time_id"] for linha in registros}
 
-        if len(registros) != len(TIMES):
+        if len(registros) != len(TIMES) or len(ids) != len(TIMES):
             raise RuntimeError(
-                f"A rodada {rodada} não contém todos os times."
+                f"A rodada {rodada} não contém exatamente os seis times."
             )
 
-        ids = {item["time_id"] for item in registros}
+        for linha in registros:
+            if not linha["nome_time"] or not linha["cartoleiro"]:
+                raise RuntimeError(f"Identificação incompleta na rodada {rodada}.")
 
-        if len(ids) != len(TIMES):
-            raise RuntimeError(
-                f"Existem times duplicados na rodada {rodada}."
-            )
-
-    print("\nValidação concluída com sucesso.")
+    print("Validação dos dados concluída.")
 
 
 def salvar_historico(linhas):
-    """Grava primeiro em arquivo temporário e só depois substitui o CSV."""
-
-    arquivo_temporario = ARQUIVO_HISTORICO.with_suffix(".tmp")
+    temporario = ARQUIVO.with_suffix(".tmp")
 
     try:
-        with arquivo_temporario.open(
-            "w",
-            newline="",
-            encoding="utf-8-sig",
-        ) as arquivo:
-            escritor = csv.DictWriter(
-                arquivo,
-                fieldnames=CAMPOS_CSV,
-                delimiter=",",
-            )
-
+        with temporario.open("w", newline="", encoding="utf-8-sig") as arquivo:
+            escritor = csv.DictWriter(arquivo, fieldnames=CAMPOS)
             escritor.writeheader()
             escritor.writerows(linhas)
 
-        # Substitui o arquivo original somente após a gravação completa.
-        arquivo_temporario.replace(ARQUIVO_HISTORICO)
+        # Só substitui o CSV atual após a coleta e validação completas.
+        temporario.replace(ARQUIVO)
 
     finally:
-        if arquivo_temporario.exists():
-            arquivo_temporario.unlink()
+        if temporario.exists():
+            temporario.unlink()
 
-
-# ============================================================
-# EXECUÇÃO
-# ============================================================
 
 if __name__ == "__main__":
     coletar_historico()
