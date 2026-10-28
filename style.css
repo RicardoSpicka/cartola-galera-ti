@@ -435,3 +435,40 @@ div.stDownloadButton > button:hover {
 }
 
 
+/* BARRA LATERAL — FIXA E COM MENOS ESPAÇO NO TOPO */
+
+/* Oculta o botão de recolher a barra lateral */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"] {
+  display: none !important;
+}
+
+/* Remove o excesso de espaço acima do conteúdo */
+[data-testid="stSidebar"] > div:first-child {
+  padding-top: 0 !important;
+}
+
+/* Reduz o espaçamento vertical dos componentes */
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+  gap: 0.55rem !important;
+}
+
+/* Compacta títulos e textos da barra lateral */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+/* Aproxima os filtros e seus rótulos */
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+  margin-bottom: 0.2rem !important;
+}
+
+/* Diminui espaços ao redor dos divisores */
+[data-testid="stSidebar"] hr {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
