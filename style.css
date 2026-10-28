@@ -422,3 +422,16 @@ div.stDownloadButton > button:hover {
   color: #FFFFFF !important;
 }
 
+
+/* ACABAMENTO DO TÍTULO DA CLASSIFICAÇÃO */
+[data-testid="stSubheader"] {
+  margin-bottom: 12px !important;
+}
+
+[data-testid="stDataFrame"] {
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+
