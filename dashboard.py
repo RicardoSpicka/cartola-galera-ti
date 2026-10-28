@@ -168,8 +168,6 @@ st.markdown(
 
 st.sidebar.caption(f"Tema ativo: {tema_nome}")
 
-
-
 st.sidebar.markdown('### Filtros da competição')
 turnos = {'1º turno · Rodadas 19–24': (19, 24), '2º turno · Rodadas 25–38': (25, 38)}
 turno = st.sidebar.selectbox('Turno', list(turnos), index=1)
@@ -333,16 +331,28 @@ with aba_visao:
                 'props': [
                     ('background-color', tema['sidebar']),
                     ('color', tema['text']),
-                    ('border-color', tema['border'])
+                    ('border', f"1px solid {tema['border']}"),
+                    ('font-weight', '700'),
+                    ('padding', '10px')
                 ]
             },
             {
                 'selector': 'td',
                 'props': [
-                    ('border-color', tema['border'])
+                    ('border', f"1px solid {tema['border']}"),
+                    ('padding', '10px')
+                ]
+            },
+            {
+                'selector': 'table',
+                'props': [
+                    ('border-collapse', 'collapse'),
+                    ('border', f"1px solid {tema['border']}"),
+                    ('border-radius', '8px'),
+                    ('overflow', 'hidden')
                 ]
             }
-        ]),
+        ])
         use_container_width=True,
         hide_index=True
     )
