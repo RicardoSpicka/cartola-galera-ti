@@ -313,7 +313,7 @@ with aba_visao:
     })
 
     
-    st.dataframe(
+    st.table(
         tabela.style
         .format({
             'Pontos na rodada': '{:.2f}',
@@ -323,7 +323,8 @@ with aba_visao:
         .set_properties(**{
             'background-color': tema['panel'],
             'color': tema['text'],
-            'border-color': tema['border']
+            'border': f"1px solid {tema['border']}",
+            'padding': '10px'
         })
         .set_table_styles([
             {
@@ -339,6 +340,8 @@ with aba_visao:
             {
                 'selector': 'td',
                 'props': [
+                    ('background-color', tema['panel']),
+                    ('color', tema['text']),
                     ('border', f"1px solid {tema['border']}"),
                     ('padding', '10px')
                 ]
@@ -347,14 +350,11 @@ with aba_visao:
                 'selector': 'table',
                 'props': [
                     ('border-collapse', 'collapse'),
-                    ('border', f"1px solid {tema['border']}"),
-                    ('border-radius', '8px'),
-                    ('overflow', 'hidden')
+                    ('width', '100%'),
+                    ('border', f"1px solid {tema['border']}")
                 ]
             }
-        ]),
-        use_container_width=True,
-        hide_index=True
+        ])
     )
 
     st.markdown(
